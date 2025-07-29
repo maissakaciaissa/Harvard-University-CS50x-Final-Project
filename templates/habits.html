@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}My Habits - Habit Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-1">
+                        <i class="fas fa-list-check text-primary me-3"></i>My Habits
+                    </h1>
+                    <p class="text-muted mb-0">Create, manage, and track your daily habits</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-primary fs-6">{{ habits|length }} Habit{{ 's' if habits|length != 1 else '' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Habit Creation Form -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Create New Habit
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row align-items-end">
+                            <div class="col-md-8">
+                                <label for="name" class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-1 text-primary"></i>Habit Name
+                                </label>
+                                <input type="text"
+                                       class="form-control form-control-lg"
+                                       id="name"
+                                       name="name"
+                                       placeholder="e.g., Drink 8 glasses of water, Read for 30 minutes..."
+                                       required
+                                       maxlength="100">
+                                <div class="form-text">Choose a clear, specific name for your habit</div>
+                            </div>
+                            <div class="col-md-4 mt-3 mt-md-0">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
+                                    <i class="fas fa-save me-2"></i>Create Habit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Habits List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2 text-primary"></i>Your Habits
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if habits %}
+                        <div class="list-group list-group-flush">
+                            {% for habit in habits %}
+                                <div class="list-group-item border-0 py-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-start">
+                                                <div class="habit-icon me-3">
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                         style="width: 50px; height: 50px; background: linear-gradient(135deg, #007bff22, #007bff44); border: 2px solid #007bff;">
+                                                        <i class="fas fa-bullseye" style="color: #007bff;"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="habit-details">
+                                                    <h6 class="mb-1 fw-bold text-dark">{{ habit.name }}</h6>
+                                                    <div class="d-flex align-items-center text-muted small">
+                                                        <i class="fas fa-calendar-plus me-1"></i>
+                                                        <span>Created {{ habit.created_at.strftime('%B %d, %Y') }}</span>
+                                                        <span class="mx-2">•</span>
+                                                        <span class="badge bg-light text-dark">Personal</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                            <div class="d-flex align-items-center justify-content-md-end">
+                                                <div class="habit-stats me-3">
+                                                    <div class="text-center">
+                                                        <div class="fw-bold text-primary fs-5">
+                                                            {% if habit.get_current_streak %}
+                                                                {{ habit.get_current_streak() }}
+                                                            {% else %}
+                                                                0
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="text-muted small">Current Streak</div>
+                                                    </div>
+                                                </div>
+                                                <form method="POST" style="display:inline;" class="delete-form">
+                                                    <input type="hidden" name="delete" value="{{ habit.id }}">
+                                                    <button type="submit"
+                                                            class="btn btn-outline-danger btn-sm shadow-sm delete-btn"
+                                                            data-habit-name="{{ habit.name }}"
+                                                            title="Delete habit">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if not loop.last %}
+                                    <hr class="my-0 mx-4" style="opacity: 0.1;">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-clipboard-list fa-4x text-muted opacity-50"></i>
+                            </div>
+                            <h5 class="text-muted mb-3">No habits yet!</h5>
+                            <p class="text-muted mb-4">Start building better habits by creating your first one above.</p>
+                            <div class="d-flex justify-content-center">
+                                <div class="card border-0 bg-light p-3" style="max-width: 400px;">
+                                    <h6 class="text-primary mb-2"><i class="fas fa-lightbulb me-2"></i>Habit Ideas</h6>
+                                    <ul class="list-unstyled mb-0 text-start small">
+                                        <li><i class="fas fa-circle fa-xs text-primary me-2"></i>Drink 8 glasses of water daily</li>
+                                        <li><i class="fas fa-circle fa-xs text-primary me-2"></i>Read for 30 minutes</li>
+                                        <li><i class="fas fa-circle fa-xs text-primary me-2"></i>Exercise for 20 minutes</li>
+                                        <li><i class="fas fa-circle fa-xs text-primary me-2"></i>Meditate for 10 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styles for enhanced design */
+.habit-icon {
+    transition: transform 0.2s ease;
+}
+
+.list-group-item:hover .habit-icon {
+    transform: scale(1.05);
+}
+
+.list-group-item {
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    transform: scale(1.05);
+}
+
+.card {
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+</style>
+
+<script>
+// Enhanced delete confirmation
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtns = document.querySelectorAll('.delete-btn');
+
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const habitName = this.getAttribute('data-habit-name');
+
+            if (confirm(`Are you sure you want to delete "${habitName}"?\n\nThis action cannot be undone and will remove all associated data.`)) {
+                this.closest('form').submit();
+            }
+        });
+    });
+
+    // Auto-focus on habit name input
+    const nameInput = document.getElementById('name');
+    if (nameInput) {
+        nameInput.focus();
+    }
+});
+</script>
+{% endblock %}

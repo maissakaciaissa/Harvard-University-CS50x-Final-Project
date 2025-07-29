@@ -1,0 +1,19 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+}
+
+main {
+    flex: 1 0 auto; /* Allows main to grow and push footer down */
+}
+
+footer {
+    flex-shrink: 0; /* Prevents footer from shrinking */
+    width: 100%; /* Ensures footer spans the page */
+}
