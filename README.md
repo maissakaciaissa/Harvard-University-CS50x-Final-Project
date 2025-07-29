@@ -1,7 +1,4 @@
 # HabitPeak
-
-#### Video Demo: <https://youtu.be/QX4_BRHCNdg>
-
 #### Description
 
 **HabitPeak** is a user-friendly web application developed using Flask, HTML, CSS, and JavaScript, with Bootstrap enhancing its design, to help users build and track daily habits effortlessly. Created as part of the **CS50 Final Project**, this project reflects my journey through the course, blending practical coding skills with a user-focused approach to foster personal growth and consistency. The inspiration came from my own struggle to maintain routines, prompting me to create a tool that turns aspirations into actionable habits. Built from scratch, HabitPeak offers a sleek, responsive interface that adapts seamlessly across devices—desktops, tablets, and mobiles—thanks to Bootstrap’s robust framework. Users can set specific goals, monitor progress, and stay motivated as they achieve streaks and milestones, all within a rewarding experience.
